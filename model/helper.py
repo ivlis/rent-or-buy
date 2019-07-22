@@ -87,7 +87,7 @@ def load_data_by_urban_codes(state="MA", min_year=2011):
         .mean()
         .reset_index()
     )
-    df_urban_code.drop("RegionName", axis=1, inplace=True)  # does not make sense now
+    df_urban_code.drop("RegionName", axis=1, inplace=True)
 
     return df_urban_code, df_considered_counties
 
