@@ -14,10 +14,7 @@
 # ---
 
 # +
-import numpy as np
 import pandas as pd
-import datetime
-
 import gzip
 
 
@@ -29,8 +26,8 @@ def load_data_by_urban_codes(state='MA', min_year=2011):
         df_county = pd.read_csv(fgz)
     df_county.Date = pd.to_datetime(df_county.Date)
     df_county = df_county[df_county.Date.dt.year>=min_year]
-    
-    #load county codes
+
+    # load county codes
     df_county_codes = pd.read_excel('./data/NCHSURCodes2013.xlsx')
     df_county_codes.rename(columns={
         'FIPS code': 'RegionName', 
@@ -78,8 +75,4 @@ def load_hpi_master(place_name=None):
     hpi = hpi_master[
         (hpi_master.place_name==place_name) & (hpi_master.frequency == 'monthly')
     ] if place_name else hpi_master
-    
     return hpi
-
-
-
