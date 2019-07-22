@@ -20,11 +20,6 @@ from sklearn.base import BaseEstimator, TransformerMixin
 
 # -
 
-def moving_average(a, n=3):
-    ret = np.cumsum(a, dtype=float)
-    ret[n:] = ret[n:] - ret[:-n]
-    return ret[n - 1:] / n
-
 
 class SavgolFilter(BaseEstimator, TransformerMixin):
     def __init__(self, column=None, window_length=0, poly_order=0):
