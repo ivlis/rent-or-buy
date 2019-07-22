@@ -13,19 +13,17 @@
 #     name: conda-env-zillow-py
 # ---
 
-# +
 import numpy as np
 import pandas as pd
-
-import datetime
-
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LinearRegression, Lasso
-from sklearn.pipeline import Pipeline 
+from sklearn.linear_model import Lasso
 from sklearn.model_selection import GridSearchCV, KFold
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 
-from .helper import load_data_by_urban_codes, load_loan_apr_monthly, load_hpi_master
-from .periodic_model import GeneratePeriodic, Derivatives, SavgolFilter, SelectFeatures
+from .helper import (load_data_by_urban_codes, load_hpi_master,
+                     load_loan_apr_monthly)
+from .periodic_model import (Derivatives, GeneratePeriodic, SavgolFilter,
+                             SelectFeatures)
 
 
 # +
@@ -137,5 +135,3 @@ class PriceModel:
                 
       
 # -
-
-
