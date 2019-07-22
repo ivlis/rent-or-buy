@@ -21,7 +21,7 @@ from sklearn.model_selection import GridSearchCV, KFold
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
-from .helper import (load_data_by_urban_codes, load_hpi_master,
+from .helper import (load_houseprices_by_urban_codes, load_hpi_master,
                      load_loan_apr_monthly, load_fmr_by_region)
 from .periodic_model import (Derivatives, GeneratePeriodic, SavgolFilter,
                              SelectFeaturesR)
@@ -57,7 +57,7 @@ class RentModel:
     )
 
     def _load_features(self):
-        house_prices, selected_counties = load_data_by_urban_codes(state="MA")
+        house_prices, selected_counties = load_houseprices_by_urban_codes(state="MA")
 
         self.fmr_index = load_fmr_by_region(selected_counties)
 
@@ -72,7 +72,7 @@ class RentModel:
         self.prp_features = self.fmr_index.merge(smooth_hpi_apr, on="Date")
 
     def _load_targets(self):
-        house_prices, selected_counties = load_data_by_urban_codes(state="MA")
+        house_prices, selected_counties = load_houseprices_by_urban_codes(state="MA")
         rent_prices_combined = []
         for rooms in range(1, 5):
             df = house_prices[

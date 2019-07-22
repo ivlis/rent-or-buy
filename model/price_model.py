@@ -20,7 +20,7 @@ from sklearn.model_selection import GridSearchCV, KFold
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
-from .helper import load_data_by_urban_codes, load_hpi_master, load_loan_apr_monthly
+from .helper import load_houseprices_by_urban_codes, load_hpi_master, load_loan_apr_monthly
 from .periodic_model import Derivatives, GeneratePeriodic, SavgolFilter, SelectFeatures
 
 
@@ -63,7 +63,7 @@ class PriceModel:
         self.prp_features = self._preprocess.transform(features)  # Prepocessed features
 
     def _load_targets(self):
-        house_prices, selected_counties = load_data_by_urban_codes(state="MA")
+        house_prices, selected_counties = load_houseprices_by_urban_codes(state="MA")
         house_prices_combined = []
         for rooms in range(1, 5):
             df = house_prices[
