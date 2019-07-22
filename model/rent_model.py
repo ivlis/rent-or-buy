@@ -22,7 +22,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 from .helper import (load_data_by_urban_codes, load_hpi_master,
-                     load_loan_apr_monthly)
+                     load_loan_apr_monthly, load_fmr_by_region)
 from .periodic_model import (Derivatives, GeneratePeriodic, SavgolFilter,
                              SelectFeaturesR)
 
@@ -58,36 +58,8 @@ class RentModel:
 
     def _load_features(self):
         house_prices, selected_counties = load_data_by_urban_codes(state="MA")
-        all_fmr = pd.read_msgpack("./data/fmr/all_fmr.mp")
-        ma_fmr = all_fmr.merge(
-            selected_counties[["RegionName", "urban_code"]],
-            left_on="fips_simple",
-            right_on="RegionName",
-        ).drop(columns=["fips_simple", "RegionName"])
-        ma_fmr_urban_code = ma_fmr.groupby(["Date", "urban_code"]).mean().reset_index()
-        ma_fmr_urban_code.Date -= pd.tseries.offsets.MonthEnd()
 
-        fmr_interpolated = []
-
-        for uc in range(1, 4):
-            df = (
-                ma_fmr_urban_code[ma_fmr_urban_code["urban_code"] == uc]
-                .set_index("Date")
-                .resample("M")
-                .interpolate(method="linear", order=2)
-                .reset_index()
-            )
-            fmr_interpolated.append(df)
-        fmr_interpolated = pd.concat(fmr_interpolated)
-
-        fmr_combined = []
-        for rooms in range(1, 5):
-            df = fmr_interpolated[["Date", "urban_code", f"fmr_{rooms}"]].copy()
-            df["rooms"] = rooms
-            df = df.rename(columns={f"fmr_{rooms}": "fmr"})
-            fmr_combined.append(df)
-        fmr_combined = pd.concat(fmr_combined, axis=0)
-        fmr_combined["urban_code"] = np.round(fmr_combined["urban_code"]).astype(int)
+        self.fmr_index = load_fmr_by_region(selected_counties)
 
         loan_apr = load_loan_apr_monthly()
         hpi = load_hpi_master("New England Division")
@@ -96,10 +68,6 @@ class RentModel:
         )
 
         smooth_hpi_apr = self._preprocess.transform(hpi_apr)  # Prepocessed features
-
-        self.fmr_index = (
-            fmr_combined.groupby("Date").mean().reset_index()[["Date", "fmr"]]
-        )
 
         self.prp_features = self.fmr_index.merge(smooth_hpi_apr, on="Date")
 
