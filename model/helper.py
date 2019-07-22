@@ -82,34 +82,4 @@ def load_hpi_master(place_name=None):
     return hpi
 
 
-def calculate_period_diff(df_urban_code, values, t):
-    df_urban_code['Date_shift'] = df_urban_code.Date + pd.tseries.offsets.MonthEnd()*int(12*t)
-    df_urban_code = df_urban_code.merge(df_urban_code[['Date', 'urban_code'] + values] , 
-                  left_on=['Date_shift', 'urban_code'], 
-                  right_on=['Date', 'urban_code'],
-                  suffixes=['', '_shift'],
-                  validate='1:1')
-    for v in values:
-        df_urban_code['delta_'+v] = df_urban_code[v+'_shift'] - df_urban_code[v]
-        
-    return df_urban_code
-
-
-def calculate_L(df_urban_code, rooms_rent, rooms_buy, code_rent, code_buy, t):
-    df_tmp_rent = df_urban_code[
-        ['Date', 'urban_code', f'MedianRentalPrice_{rooms_rent}Bedroom']
-    ].query(f'urban_code=={code_rent}')
-    df_tmp_buy = df_urban_code[
-        ['Date', 'urban_code', f'delta_MedianListingPrice_{rooms_buy}Bedroom']
-    ].query(f'urban_code=={code_buy}')
-    df_tmp = pd.merge(df_tmp_rent, df_tmp_buy, on='Date', how='inner')
-    df_tmp['L'] = df_tmp[f'MedianRentalPrice_{rooms_rent}Bedroom']*12*t + df_tmp[f'delta_MedianListingPrice_{rooms_buy}Bedroom']
-    df_tmp['strategy'] = f'r_{rooms_rent}_to_{rooms_buy}_c_{code_rent}_to_{code_buy}'
-    return df_tmp.drop(columns=[
-        'urban_code_x',
-        'urban_code_y',
-        f'MedianRentalPrice_{rooms_rent}Bedroom', 
-        f'delta_MedianListingPrice_{rooms_buy}Bedroom'])
-
-
 
