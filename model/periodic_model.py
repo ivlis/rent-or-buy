@@ -104,20 +104,3 @@ class Derivatives(BaseEstimator, TransformerMixin):
                 out[self.column + ("" if d == 1 else f"_div_{d-1}")]
             )
         return out
-
-
-def generate_Xy(df, urban_code, rooms):
-    X = df[df.urban_code == urban_code]
-    y = X[f"MedianListingPrice_{rooms}Bedroom"]
-    X = X[["Date", "index_sa", "apr"]]
-
-    return X, y
-
-
-def split_test_train(X, y, proportion=0.7):
-    X_train = X[: int(len(X) * proportion)]
-    y_train = y[: int(len(y) * proportion)]
-
-    X_test = X[int(len(X) * proportion) :]
-    y_test = y[int(len(y) * proportion) :]
-    return X_train, y_train, X_test, y_test
