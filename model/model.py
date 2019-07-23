@@ -23,11 +23,11 @@ class Model:
         self._load_features()
         self._load_targets()
 
-        self.prp_features = self._preprocess.transform(self.features)  # Prepocessed features
+        self.prp_features = self._preprocess.transform(
+            self.features
+        )  # Prepocessed features
 
-        self.features_and_targets = self.targets.merge(
-            self.prp_features, on="Date"
-        )
+        self.features_and_targets = self.targets.merge(self.prp_features, on="Date")
 
     def _fit_market(self, urban_code, rooms):
         X, y = self.getXy(urban_code, rooms)
@@ -51,7 +51,7 @@ class Model:
         df = self.features_and_targets
         df = df[(df.urban_code == urban_code) & (df.rooms == rooms)]
         y = df.target
-        X = df.drop(columns=['target', 'rooms', 'urban_code'])
+        X = df.drop(columns=["target", "rooms", "urban_code"])
         return X, y
 
     def get_model(self, urban_code, rooms):

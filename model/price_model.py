@@ -16,7 +16,11 @@
 import pandas as pd
 from sklearn.pipeline import Pipeline
 
-from .helper import load_houseprices_by_urban_codes, load_hpi_master, load_loan_apr_monthly
+from .helper import (
+    load_houseprices_by_urban_codes,
+    load_hpi_master,
+    load_loan_apr_monthly,
+)
 from .periodic_model import Derivatives, SavgolFilter, SelectFeatures
 from .model import Model
 
@@ -26,13 +30,13 @@ class PriceModel(Model):
 
     _preprocess = Pipeline(
         steps=[
-            ('feature_selection', SelectFeatures(['Date', 'apr', 'hpi_sa'])),
+            ("feature_selection", SelectFeatures(["Date", "apr", "hpi_sa"])),
             ("savgol_apr", SavgolFilter(column="apr", window_length=11, poly_order=3)),
             (
                 "savgol_hpi",
                 SavgolFilter(column="hpi_sa", window_length=11, poly_order=3),
             ),
-            ("div_apr", Derivatives(column="apr_savgol", order=2))
+            ("div_apr", Derivatives(column="apr_savgol", order=2)),
         ]
     )
 
@@ -53,13 +57,12 @@ class PriceModel(Model):
                 ["Date", "urban_code", f"MedianListingPrice_{rooms}Bedroom"]
             ].copy()
             df["rooms"] = rooms
-            df = df.rename(
-                columns={f"MedianListingPrice_{rooms}Bedroom": "target"}
-            )
+            df = df.rename(columns={f"MedianListingPrice_{rooms}Bedroom": "target"})
             house_prices_combined.append(df)
         house_prices_combined = pd.concat(house_prices_combined, axis=0)
         house_prices_combined = house_prices_combined.dropna()
         house_prices_combined.target /= 1000
         self.targets = house_prices_combined
+
 
 # -
