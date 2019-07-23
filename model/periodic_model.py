@@ -51,22 +51,6 @@ class SelectFeatures(BaseEstimator, TransformerMixin):
         return out[self.features]
 
 
-class SelectFeaturesR(BaseEstimator, TransformerMixin):
-    def __init__(self, harmonics=0):
-        self.harmonics = harmonics
-
-    def fit(self, X, y=None):
-        return self
-
-    def transform(self, X, y=None):
-        out = X
-        try:
-            out = X.drop(columns=["RentalPrice"])
-        except KeyError:
-            pass
-        return out[["Date", "fmr", "apr_savgol", "apr_savgol_div_1"]]
-
-
 class GeneratePeriodic(BaseEstimator, TransformerMixin):
     def __init__(self, harmonics=0):
         self.harmonics = harmonics

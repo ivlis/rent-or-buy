@@ -22,7 +22,7 @@ import pandas as pd
 
 # -
 
-def load_data_by_urban_codes(state="MA", min_year=2011):
+def load_houseprices_by_urban_codes(state="MA", min_year=2011):
     # load sales/rent data by county
     with gzip.open("./data/zecon/County_time_series.csv.gz", "rb") as fgz:
         df_county = pd.read_csv(fgz)
