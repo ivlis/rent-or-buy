@@ -19,7 +19,6 @@ from sklearn.pipeline import Pipeline
 
 from .helper import (
     load_houseprices_by_urban_codes,
-    load_hpi_master,
     load_loan_apr_monthly,
     load_fmr_by_region,
 )
