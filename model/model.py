@@ -5,8 +5,7 @@ from sklearn.model_selection import GridSearchCV, KFold
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
-from .helper import load_houseprices_by_urban_codes, load_hpi_master, load_loan_apr_monthly
-from .periodic_model import Derivatives, GeneratePeriodic, SavgolFilter, SelectFeatures
+from .periodic_model import GeneratePeriodic
 
 
 # +
@@ -14,28 +13,10 @@ class Model:
 
     _lin_reg = Pipeline(
         steps=[
-            ("select_features", SelectFeatures()),
             ("period_generation", GeneratePeriodic()),
             ("scaling", StandardScaler()),
             ("model", Lasso()),
         ]
-    )
-
-    _smoothing = Pipeline(
-        steps=[
-            ("savgol_apr", SavgolFilter(column="apr", window_length=11, poly_order=3)),
-            (
-                "savgol_hpi",
-                SavgolFilter(column="hpi_sa", window_length=11, poly_order=3),
-            ),
-        ]
-    )
-    _derivatives = Pipeline(
-        steps=[("div_apr", Derivatives(column="apr_savgol", order=2))]
-    )
-
-    _preprocess = Pipeline(
-        steps=[("smoothing", _smoothing), ("derivatives", _derivatives)]
     )
 
     def __init__(self):
@@ -70,7 +51,7 @@ class Model:
         df = self.features_and_targets
         df = df[(df.urban_code == urban_code) & (df.rooms == rooms)]
         y = df.target
-        X = df.drop(columns=['target'])
+        X = df.drop(columns=['target', 'rooms', 'urban_code'])
         return X, y
 
     def get_model(self, urban_code, rooms):

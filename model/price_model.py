@@ -14,19 +14,27 @@
 # ---
 
 import pandas as pd
-from sklearn.linear_model import Lasso
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
 
 from .helper import load_houseprices_by_urban_codes, load_hpi_master, load_loan_apr_monthly
-from .periodic_model import Derivatives, GeneratePeriodic, SavgolFilter, SelectFeatures
+from .periodic_model import Derivatives, SavgolFilter, SelectFeatures
 from .model import Model
 
 
 # +
 class PriceModel(Model):
 
-
+    _preprocess = Pipeline(
+        steps=[
+            ('feature_selection', SelectFeatures(['Date', 'apr', 'hpi_sa'])),
+            ("savgol_apr", SavgolFilter(column="apr", window_length=11, poly_order=3)),
+            (
+                "savgol_hpi",
+                SavgolFilter(column="hpi_sa", window_length=11, poly_order=3),
+            ),
+            ("div_apr", Derivatives(column="apr_savgol", order=2))
+        ]
+    )
 
     def _load_features(self):
         loan_apr = load_loan_apr_monthly()

@@ -40,19 +40,15 @@ class SavgolFilter(BaseEstimator, TransformerMixin):
 
 
 class SelectFeatures(BaseEstimator, TransformerMixin):
-    def __init__(self, features=0):
-        self.harmonics = harmonics
+    def __init__(self, features=[]):
+        self.features = features
 
     def fit(self, X, y=None):
         return self
 
     def transform(self, X, y=None):
-        out = X
-        try:
-            out = X.drop(columns=["ListingPrice"])
-        except KeyError:
-            pass
-        return out[["Date", "apr_savgol", "hpi_sa_savgol", "apr_savgol_div_1"]]
+        out = X.copy()
+        return out[self.features]
 
 
 class SelectFeaturesR(BaseEstimator, TransformerMixin):
