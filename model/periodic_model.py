@@ -35,7 +35,7 @@ class SavgolFilter(BaseEstimator, TransformerMixin):
         out[self.column + "_savgol"] = savgol_filter(
             out[self.column], self.window_length, self.poly_order
         )
-        #         out['apr'] = savgol_filter(out['apr'], 11, 2)
+        out = out.drop(columns=[self.column])
         return out
 
 
