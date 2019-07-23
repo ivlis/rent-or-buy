@@ -5,7 +5,8 @@ from sklearn.model_selection import GridSearchCV, KFold
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
-from .periodic_model import Derivatives, GeneratePeriodic, SavgolFilter
+from .helper import load_houseprices_by_urban_codes, load_hpi_master, load_loan_apr_monthly
+from .periodic_model import Derivatives, GeneratePeriodic, SavgolFilter, SelectFeatures
 
 
 # +
@@ -13,6 +14,7 @@ class Model:
 
     _lin_reg = Pipeline(
         steps=[
+            ("select_features", SelectFeatures()),
             ("period_generation", GeneratePeriodic()),
             ("scaling", StandardScaler()),
             ("model", Lasso()),
@@ -47,8 +49,8 @@ class Model:
         )
 
     def _fit_market(self, urban_code, rooms):
-        Xy = self.getXy(urban_code, rooms)
-        y = Xy["ListingPrice"]
+        X, y = self.getXy(urban_code, rooms)
+
         parameters = {
             "period_generation__harmonics": list(range(0, 7)),
             "model__alpha": np.logspace(-1, 3, 3),
@@ -59,12 +61,17 @@ class Model:
             cv=KFold(5, shuffle=True, random_state=20),
             iid=False,
         )
-        cvgrid.fit(Xy, y)
+
+        cvgrid.fit(X, y)
+
         return cvgrid
 
     def getXy(self, urban_code, rooms):
         df = self.features_and_targets
-        return df[(df.urban_code == urban_code) & (df.rooms == rooms)]
+        df = df[(df.urban_code == urban_code) & (df.rooms == rooms)]
+        y = df.target
+        X = df.drop(columns=['target'])
+        return X, y
 
     def get_model(self, urban_code, rooms):
         df = self.models

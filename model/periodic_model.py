@@ -40,7 +40,7 @@ class SavgolFilter(BaseEstimator, TransformerMixin):
 
 
 class SelectFeatures(BaseEstimator, TransformerMixin):
-    def __init__(self, harmonics=0):
+    def __init__(self, features=0):
         self.harmonics = harmonics
 
     def fit(self, X, y=None):

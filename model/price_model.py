@@ -46,12 +46,12 @@ class PriceModel(Model):
             ].copy()
             df["rooms"] = rooms
             df = df.rename(
-                columns={f"MedianListingPrice_{rooms}Bedroom": "ListingPrice"}
+                columns={f"MedianListingPrice_{rooms}Bedroom": "target"}
             )
             house_prices_combined.append(df)
         house_prices_combined = pd.concat(house_prices_combined, axis=0)
         house_prices_combined = house_prices_combined.dropna()
-        house_prices_combined.ListingPrice /= 1000
+        house_prices_combined.target /= 1000
         self.targets = house_prices_combined
 
 # -
