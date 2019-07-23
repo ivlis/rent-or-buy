@@ -5,7 +5,7 @@ from sklearn.model_selection import GridSearchCV, KFold
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
-from .periodic_model import GeneratePeriodic
+from .transformations import GeneratePeriodic
 
 
 # +

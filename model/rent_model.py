@@ -24,7 +24,7 @@ from .helper import (
     load_fmr_by_region,
 )
 
-from .periodic_model import Derivatives, SavgolFilter, SelectFeatures
+from .transformations import Derivatives, SavgolFilter, SelectFeatures
 from .model import Model
 
 
@@ -35,24 +35,18 @@ class RentModel(Model):
         steps=[
             ("feature_selection", SelectFeatures(["Date", "apr", "fmr"])),
             ("savgol_apr", SavgolFilter(column="apr", window_length=11, poly_order=3)),
-            ("div_apr", Derivatives(column="apr_savgol", order=2)),
+            ("div_apr", Derivatives(column="apr_savgol", order=4)),
         ]
     )
 
     def _load_features(self):
         house_prices, selected_counties = load_houseprices_by_urban_codes(state="MA")
 
-        self.fmr_index = load_fmr_by_region(selected_counties)
+        fmr_index = load_fmr_by_region(selected_counties)
 
         loan_apr = load_loan_apr_monthly()
-        hpi = load_hpi_master("New England Division")
-        hpi_apr = loan_apr.merge(
-            hpi[["Date", "hpi_sa"]], right_on="Date", left_index=True
-        )
 
-        smooth_hpi_apr = self._preprocess.transform(hpi_apr)  # Prepocessed features
-
-        self.prp_features = self.fmr_index.merge(smooth_hpi_apr, on="Date")
+        self.features = fmr_index.merge(loan_apr, left_on='Date', right_index=True)
 
     def _load_targets(self):
         house_prices, selected_counties = load_houseprices_by_urban_codes(state="MA")
@@ -72,7 +66,7 @@ class RentModel(Model):
             | (rent_prices_combined.rooms != 1)
             | (rent_prices_combined.urban_code != 2)
         ]
-        self.rent_prices_combined = rent_prices_combined
+        self.targets = rent_prices_combined
 
 
 # -
