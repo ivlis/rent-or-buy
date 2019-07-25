@@ -97,9 +97,10 @@ def load_houseprices_by_urban_codes(state="MA", min_year=2011):
 
 def load_loan_apr_monthly():
     loan_apr = pd.read_csv("./data/MORTGAGE30US.csv", parse_dates=[0], index_col=0)
-    loan_apr.rename(columns={"DATE": "Date", "MORTGAGE30US": "apr"}, inplace=True)
+    loan_apr.rename(columns={"MORTGAGE30US": "apr"}, inplace=True)
     loan_apr.apr = loan_apr.apr / 100
     loan_apr = loan_apr.resample("M").mean()
+    loan_apr = loan_apr.reset_index().rename(columns={"DATE": "Date"})
     return loan_apr
 
 
@@ -169,8 +170,6 @@ def load_fmr_by_region(selected_counties):
     fmr_combined = pd.concat(fmr_combined, axis=0)
     fmr_combined["urban_code"] = np.round(fmr_combined["urban_code"]).astype(int)
 
-    fmr_index = (
-        fmr_combined.groupby("Date").mean().reset_index()[["Date", "fmr"]]
-    )
+    fmr_index = fmr_combined.groupby("Date").mean().reset_index()[["Date", "fmr"]]
 
     return fmr_index

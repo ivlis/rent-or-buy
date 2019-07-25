@@ -43,9 +43,7 @@ class PriceModel(Model):
     def _load_features(self):
         loan_apr = load_loan_apr_monthly()
         hpi = load_hpi_master("New England Division")
-        features = loan_apr.merge(
-            hpi[["Date", "hpi_sa"]], right_on="Date", left_index=True
-        )
+        features = loan_apr.merge(hpi[["Date", "hpi_sa"]], on="Date")
 
         self.features = features
 
