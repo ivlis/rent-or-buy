@@ -45,7 +45,7 @@ class RentModel(Model):
 
         loan_apr = load_loan_apr_monthly()
 
-        self.features = fmr_index.merge(loan_apr, left_on='Date', right_index=True)
+        self.features = fmr_index.merge(loan_apr, on='Date')
 
     def _load_targets(self):
         house_prices, selected_counties = load_houseprices_by_urban_codes(state="MA")
