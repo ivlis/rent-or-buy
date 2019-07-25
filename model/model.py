@@ -29,6 +29,14 @@ class Model:
 
         self.features_and_targets = self.targets.merge(self.prp_features, on="Date")
 
+        self.density_dict = pd.DataFrame(
+            [{1: "urban", 2: "suburb", 3: "rural"}]
+        ).T.rename(columns={0: "density"})
+
+        self.features_and_targets = self.features_and_targets.merge(
+            self.density_dict, how="left", left_on="urban_code", right_index=True
+        )
+
     def _fit_market(self, urban_code, rooms):
         X, y = self.getXy(urban_code, rooms)
 
@@ -95,10 +103,6 @@ class Model:
                 all_y_hats.append(out)
 
         all_y_hats = pd.concat(all_y_hats, axis=0)
-
-        all_y_hats.loc[all_y_hats.urban_code == 1, "density"] = "urban"
-        all_y_hats.loc[all_y_hats.urban_code == 2, "density"] = "suburban"
-        all_y_hats.loc[all_y_hats.urban_code == 3, "density"] = "rural"
 
         return all_y_hats
 
