@@ -34,7 +34,7 @@ class RentModel(Model):
         steps=[
             ("feature_selection", SelectFeatures(["Date", "apr", "fmr"])),
             ("savgol_apr", SavgolFilter(column="apr", window_length=11, poly_order=3)),
-            ("div_apr", Derivatives(column="apr_savgol", order=4)),
+            ("div_apr", Derivatives(column="apr_savgol", order=1)),
         ]
     )
 
