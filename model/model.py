@@ -59,7 +59,7 @@ class Model:
         df = self.features_and_targets
         df = df[(df.urban_code == urban_code) & (df.rooms == rooms)]
         y = df.target
-        X = df.drop(columns=["target", "rooms", "urban_code"])
+        X = df.drop(columns=["target", "rooms", "urban_code", "density"])
         return X, y
 
     def get_model(self, urban_code, rooms):
