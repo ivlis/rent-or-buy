@@ -80,6 +80,10 @@ class Model:
 
         models["rooms"] = models["rooms"].astype(int)
         models["urban_code"] = models["urban_code"].astype(int)
+
+        models = models.merge(
+            self.density_dict, how="left", left_on="urban_code", right_index=True
+        )
         self.models = models
         return None
 
