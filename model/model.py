@@ -108,6 +108,10 @@ class Model:
 
         all_y_hats = pd.concat(all_y_hats, axis=0)
 
+        all_y_hats = all_y_hats.merge(
+            self.density_dict, how="left", left_on="urban_code", right_index=True
+        )
+
         return all_y_hats
 
 
